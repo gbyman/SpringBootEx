@@ -38,10 +38,15 @@ public class BoardController {
 		// 등록 작업 끝난 후 다시 목록 화면으로 이동, 게시물의 번호를 같이 전달하기 위해 RedirectAttributes 이용
 	}
 	
-	@GetMapping("/get")
+	@GetMapping("/register")
+	public void register() {
+		
+	}
+	
+	@GetMapping({"/get", "/modify"})
 	public void get(@RequestParam("bno") Long bno, Model model) {
 		
-		log.info("/get");
+		log.info("/get or modify");
 		model.addAttribute("board", service.get(bno));
 	}
 	
