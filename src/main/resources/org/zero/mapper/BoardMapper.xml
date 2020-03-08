@@ -38,4 +38,21 @@
 		, UPDATEDATE = SYSDATE
 		WHERE BNO = #{bno}
 	</update>
+	
+	<select id="getListWithPaging" resultType="org.zero.domain.BoardVO">
+		<![CDATA[
+			SELECT 
+				BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE
+			FROM
+				(
+				SELECT /*+ INDEX_DESC(TBL_BOARD PK_BOARD) */
+					ROWNUM RN, BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE
+				FROM
+					TBL_BOARD
+				WHERE
+					ROWNUM <= #{pageNum} * #{amount}
+				)
+			WHERE RN > (#{pageNum} - 1) * #{amount}
+		]]>
+	</select>
 </mapper>
