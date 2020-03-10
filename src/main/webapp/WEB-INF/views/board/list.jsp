@@ -69,7 +69,6 @@
 							<button class='btn btn-default'>Search</button>
 						</form>                 	
                  	</div>
-                 </div>
                  
                  <div class='pull-right'>
                  	<ul class="pagination">
@@ -91,13 +90,15 @@
                  	</ul>
                  </div>
                  <!-- end Pagination -->
-                 
+                </div> 
+                               
                  <form id='actionForm' action="/board/list" method='get'>
-                 	<input type='hidden' name='pageNum' value='${pageMaker.cri.pageNum }'>
-                 	<input type='hidden' name='amount' value='${pageMaker.cri.amount }'>
-                 	<input type='hidden' name='type' value='<c:out value="${pgaeMaker.cri.type }"/>'>
-                 	<input type='hidden' name='keyword' value='<c:out value="${pgaeMaker.cri.keyword }"/>'>
-                 </form>
+					 <input type='hidden' name='pageNum' value='${pageMaker.cri.pageNum}'>
+					 <input type='hidden' name='amount' value='${pageMaker.cri.amount}'>
+	   				 <input type='hidden' name='type' value='<c:out value="${ pageMaker.cri.type }"/>'> 
+	   				 <input type='hidden' name='keyword' value='<c:out value="${ pageMaker.cri.keyword }"/>'>
+				 </form>	
+                 
                  <!-- Modal 추가 -->
                  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                      <div class="modal-dialog">
