@@ -36,7 +36,7 @@
                      		<td><c:out value="${ board.bno }"/></td>
                      		<td>
                      			<a class='move' href='<c:out value="${board.bno }"/>'>
-                     			<c:out value="${ board.title }"/></a>
+                     			<c:out value="${ board.title }"/></a> <b>[ <c:out value="${board.replyCnt}" />]</b>
                      		</td>
                      		
                      		<!-- 새 창에서 조회 -->
