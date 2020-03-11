@@ -4,9 +4,7 @@
 <mapper namespace="org.zero.mapper.BoardMapper">
 	
 	<select id="getList" resultType="org.zero.domain.BoardVO">
-	<![CDATA[
-		SELECT * FROM TBL_BOARD WHERE BNO > 0
-	]]>
+		SELECT * FROM TBL_BOARD WHERE BNO <![CDATA[>]]> 0
 	</select>
 	
 	<insert id="insert">
@@ -48,10 +46,10 @@
 							TITLE LIKE '%'||#{keyword}||'%'
 						</when>
 						<when test="type == 'C'.toString()">
-							TITLE LIKE '%'||#{keyword}||'%'
+							CONTENT LIKE '%'||#{keyword}||'%'
 						</when>
 						<when test="type == 'W'.toString()">
-							TITLE LIKE '%'||#{keyword}||'%'
+							WRITER LIKE '%'||#{keyword}||'%'
 						</when>
 					</choose>
 				</trim>
@@ -86,6 +84,6 @@
 			TBL_BOARD 
 		WHERE
 		<include refid="criteria"></include> 
-			BNO > 0
+			BNO <![CDATA[>]]> 0
 	</select>
 </mapper>
