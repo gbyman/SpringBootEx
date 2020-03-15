@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zero.domain.BoardVO;
 import org.zero.domain.Criteria;
+import org.zero.mapper.BoardAttachMapper;
 import org.zero.mapper.BoardMapper;
 
 import lombok.AllArgsConstructor;
@@ -20,11 +21,23 @@ public class BoardServiceImpl implements BoardService{
 	@Setter(onMethod_ = @Autowired)
 	private BoardMapper mapper;
 	
+	@Setter(onMethod_ = @Autowired)
+	private BoardAttachMapper attachMapper;
+	
 	@Override
 	public void register(BoardVO board) {
 		
 		log.info("register......." + board);
 		mapper.insertSelectKey(board);
+		
+		if(board.getAttachList() == null || board.getAttachList().size() <= 0){
+			return;
+		}
+		
+		board.getAttachList().forEach(attach -> {
+			attach.setBno(board.getBno());
+			attachMapper.insert(attach);
+		});
 	}
 
 	@Override

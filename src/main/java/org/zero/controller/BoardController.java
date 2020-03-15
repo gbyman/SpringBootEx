@@ -46,9 +46,15 @@ public class BoardController {
 	@PostMapping("/register")
 	public String register(BoardVO board, RedirectAttributes rttr) {
 		
+		log.info("=======================");
 		log.info("register : " + board);
-		service.register(board);
-		rttr.addFlashAttribute("result", board.getBno());
+		if(board.getAttachList() != null){
+			board.getAttachList().forEach(attach -> log.info(attach));
+		}
+		
+		log.info("=======================");
+		// service.register(board);
+		// rttr.addFlashAttribute("result", board.getBno());
 		return "redirect:/board/list";
 		// 등록 작업 끝난 후 다시 목록 화면으로 이동, 게시물의 번호를 같이 전달하기 위해 RedirectAttributes 이용
 	}
@@ -87,4 +93,5 @@ public class BoardController {
 		
 		return "redirect:/board/list" + cri.getListLink();
 	}
+	
 }
