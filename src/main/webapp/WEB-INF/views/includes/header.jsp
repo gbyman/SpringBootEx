@@ -9,6 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    
+    <!-- favicon.ico 404에러 방지 -->
+	<link rel="shortcut icon" href="#">
 
     <title>SB Admin 2 - Bootstrap Admin Theme</title>
 
