@@ -54,6 +54,32 @@
      <!-- /.col-lg-12 -->
  </div>
  <!-- /.row -->
+ <!-- 원본 이미지 -->
+ <div class='bigPictureWrapper'>
+ 	<div class='bigPicture'>
+ 	</div>
+ </div>
+ <!-- 첨부파일 목록 -->
+ <div class="row">
+ 	<div class="col-lg-12">
+ 		<div class="panel panel-default">
+ 			
+ 			<div class="panel-heading">Files</div>
+ 			<!-- /.panel-heading -->
+ 			<div class="panel-body">
+ 				<div class='uploadResult'>
+ 					<ul>
+ 					</ul>
+ 				</div>
+ 			</div>
+ 			<!-- end panel body -->
+ 		</div>
+ 		<!-- end panel body -->
+ 	</div>
+ 	<!-- end panel -->
+ </div>
+ <!-- /.row -->
+ 
  <div class='row'>
  	<div class="col-lg-12">
  	
@@ -306,6 +332,35 @@
 		 showList(pageNum);
 	 });
  });
+ 
+ $(".uploadResult").on("click", "li", function(e){
+	 console.log("view image");
+	 
+	 var liObj = $(this);
+	 var path = encodeURIComponent(liObj.data("path") + "/" + liObj.data("uuid") + "_" + liObj.data("filename"));
+	 
+	 if(liObj.data("type")){
+		 // 파일 경로의 경우 함수로 전달될 때 문제가 생기므로 replace()를 이용해서 변환 후 전달
+		 showImage(path.replace(new RegExp(/\\/g), "/"));
+	 }else{
+		 // download
+		 self.location = "/download?fileName=" + path;
+	 }
+ });
+ 
+ function showImage(fileCallPath){
+	 alert(fileCallPath);
+	 $(".bigPictureWrapper").css("display","flex").show();
+	 $(".bigPicture").html("<img src='/display?fileName=" + fileCallPath + "'>")
+	 	.animate({width:'100%', height: '100%'}, 1000);
+ }
+ 
+ $(".bigPictureWrapper").on("click", function(e){
+	 $(".bigPicture").animate({width:'0%', height:'0%'}, 1000);
+	 setTimeout(function(){
+		 $(".bigPictureWrapper").hide();
+	 }, 1000);
+ });
  </script>
  <script type="text/javascript">
  $(document).ready(function(){
@@ -323,6 +378,33 @@
 		 operForm.attr("action", "/board/list");
 		 operForm.submit();
 	 });
+	 
+	 // 업로드 이미지
+	 (function(){
+		 var bno = '<c:out value="${board.bno}" />';
+		 $.getJSON("/board/getAttachList", {bno: bno}, function(arr){
+			 console.log(arr);
+			 
+			 var str = "";
+			 $(arr).each(function(i, attach){
+				 
+				 //image type
+				 if(attach.fileType){
+					 var fileCallPath = encodeURIComponent(attach.uploadPath + "/s_" + attach.uuid + "_" + attach.fileName);
+					 str += "<li data-path='" + attach.uploadPath +"' data-uuid='" + attach.uuid + "' data-fileName='" + attach.fileName + "' data-type='" + attach.fileType + "' >";
+					 str += "<div><img src='/display?fileName=" + fileCallPath +"'>";
+					 str += "</div></li>";
+				 }else{
+					 str += "<li data-path='" + attach.uploadPath +"' data-uuid='" + attach.uuid + "' data-fileName='" + attach.fileName + "' data-type='" + attach.fileType + "' >";
+					 str += "<div><span> " + attach.fileName + "</span><br/>";
+					 str += "<img src='/resources/img/attach.png'>";
+					 str += "</div></li>";
+				 }
+			 });
+			 
+			 $(".uploadResult ul").html(str);
+		 }); // end getJSON
+	 })();// end function
 	 
  });
 /*  

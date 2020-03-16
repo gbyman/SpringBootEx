@@ -4,7 +4,9 @@
 <mapper namespace="org.zero.mapper.BoardMapper">
 	
 	<select id="getList" resultType="org.zero.domain.BoardVO">
-		SELECT * FROM TBL_BOARD WHERE BNO <![CDATA[>]]> 0
+		<![CDATA[
+		SELECT * FROM TBL_BOARD WHERE BNO > 0 AND ROWNUM <= 100
+		]]>
 	</select>
 	
 	<insert id="insert">
@@ -30,11 +32,12 @@
 	
 	<update id="update">
 		UPDATE TBL_BOARD
-		SET TITLE = #{title}
-		, CONTENT = #{content}
-		, WRITER = #{writer}
-		, UPDATEDATE = SYSDATE
-		WHERE BNO = #{bno}
+			SET TITLE = #{title}
+			, CONTENT = #{content}
+			, WRITER = #{writer}
+			, UPDATEDATE = SYSDATE
+		WHERE 
+			BNO = #{bno}
 	</update>
 	
 	<sql id="criteria">
@@ -60,16 +63,18 @@
 	<select id="getListWithPaging" resultType="org.zero.domain.BoardVO">
 		<![CDATA[
 			SELECT 
-				BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE, REPLYCNT
-			FROM
-				(
-				SELECT /*+ INDEX_DESC(TBL_BOARD PK_BOARD) */
-					ROWNUM RN, BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE, REPLYCNT
-				FROM
-					TBL_BOARD
-				WHERE
+    			BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE, REPLYCNT
+  			FROM 
+      			(
+			      SELECT /*+INDEX_DESC(TBL_BOARD PK_BOARD) */
+			        ROWNUM RN, BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE, REPLYCNT 
+			      FROM 
+			        TBL_BOARD
+			      WHERE 
 				]]>
+				
 				<include refid="criteria"></include>
+				
 				<![CDATA[
 					ROWNUM <= #{pageNum} * #{amount}
 				)

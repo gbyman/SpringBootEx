@@ -132,7 +132,7 @@
  $(document).ready(function(){
 	 var result = '<c:out value="${result}"/>';
 	 checkModal(result);
-	 
+	 console.log("ready 1")
 	 // 뒤로 가기 문제 해결하기 위해 window의 history 객체 이용
 	 // 먼저 checkModal() 실행, 만일 등록된 후에 이동한 것이라면 모달창 보임
 	 // 모달창이 보이는 여부와 관계없이 JavaScript의 모든 처리가 끝나게 되면 history에 쌓이는 상태는 
@@ -140,6 +140,7 @@
 	 history.replaceState({}, null, null);
 	 
 	 function checkModal(result){
+		 console.log("chkModal")
 		 if(result === '' || history.state){
 			 return;
 		 }
