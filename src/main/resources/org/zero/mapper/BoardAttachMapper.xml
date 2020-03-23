@@ -19,4 +19,8 @@
 	<delete id="deleteAll">
 		DELETE TBL_ATTACH WHERE BNO = #{bno}
 	</delete>
+	
+	<select id="getOldFiles" resultType="org.zero.domain.BoardAttachVO">
+		SELECT * FROM TBL_ATTACH WHERE UPLOADPATH = TO_CHAR(SYSDATE -1, 'YYYY\MM\DD')
+	</select>
 </mapper>
