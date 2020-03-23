@@ -8,12 +8,19 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @ComponentScan(basePackages = "org.zero.service")
+@ComponentScan(basePackages = "org.zero.task")
+@EnableAspectJAutoProxy
+@EnableScheduling
+@EnableTransactionManagement
 @MapperScan(basePackages = { "org.zero.mapper" })
 public class RootConfig {
 
@@ -21,7 +28,7 @@ public class RootConfig {
 	public DataSource dataSource(){
 		HikariConfig hikariConfig = new HikariConfig();
 		hikariConfig.setDriverClassName("net.sf.log4jdbc.sql.jdbcapi.DriverSpy");
-		hikariConfig.setJdbcUrl("jdbc:log4jdbc:oracle:thin:@localhost:1521:orcl");
+		hikariConfig.setJdbcUrl("jdbc:log4jdbc:oracle:thin:@localhost:1521:xe");
 		
 		hikariConfig.setUsername("book_ex");
 		hikariConfig.setPassword("book_ex");
