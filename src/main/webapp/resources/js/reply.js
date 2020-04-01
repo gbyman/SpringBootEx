@@ -46,6 +46,8 @@ var replyService = (function(){
 		$.ajax({
 			type : 'delete'
 			, url : '/replies/' + rno
+			, data : JSON.stringify({rno: rno, replyer: replyer})
+			, contentType: "application/json; charset=utf-8"
 			, success : function(deleteResult, status, xhr) {
 				if(callback){
 					callback(deleteResult);

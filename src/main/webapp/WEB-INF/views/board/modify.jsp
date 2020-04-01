@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
 <%@include file="../includes/header.jsp" %>
  <div class="row">
@@ -25,7 +26,7 @@
         <input type='hidden' name='amount' value='<c:out value="${cri.amount }"/>'>
 	    <input type='hidden' name='type' value='<c:out value="${cri.type }"/>'>
 		<input type='hidden' name='keyword' value='<c:out value="${cri.keyword }"/>'>
-      
+        <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }"/>
  
 		<div class="form-group">
 		  <label>Bno</label> 
@@ -61,8 +62,13 @@
 		  <input class="form-control" name='updateDate'
 		    value='<fmt:formatDate pattern = "yyyy/MM/dd" value = "${board.updateDate}" />'  readonly="readonly">            
 		</div>
-		  <button type="submit" data-oper='modify' class="btn btn-default">Modify</button>
-		  <button type="submit" data-oper='remove' class="btn btn-danger">Remove</button>
+			<sec:authentication property="principal" var="pinfo" />
+			<sec:authorize access="isAuthenticated()">
+				<c:if test="${pinfo.username eq board.writer }">
+					<button type="submit" data-oper='modify' class="btn btn-default">Modify</button>
+					<button type="submit" data-oper='remove' class="btn btn-danger">Remove</button>
+				</c:if>
+			</sec:authorize>
 		  <button type="submit" data-oper='list' class="btn btn-info">List</button>
 		</form>
       </div>
@@ -111,6 +117,9 @@ $(document).ready(function(){
 // JavaScript에서는 button 태그의 'data-oper' 속성을 이용해서 원하는 기능을 동작하도록 처리
 	
 	var formObj = $("form");
+	
+	var csrfHeaderName = "${_csrf.headerName}";
+	var csrfTokenValue = "${_csrf.token}";
 	
 	$('button').on("click", function(e){
 		// form 태그의 모든 버튼은 기본적으로 submit으로 처리하기 때문에 
@@ -241,6 +250,9 @@ $("input[type='file']").change(function(e){
 		 , contentType: false
 		 , data: formData
 		 , type: 'POST'
+		 , beforeSend: function(xhr){
+			 xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);//헤더 정보에 csrf 토큰값 전달 
+		 	}
 		 , dataType: 'json'
 		 , success: function(result){
 			 console.log(result);
