@@ -15,7 +15,11 @@
 	<link rel="shortcut icon" href="#">
 
     <title>SB Admin 2 - Bootstrap Admin Theme</title>
-
+	
+	<!-- jQuery -->
+    <script  src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  		crossorigin="anonymous"></script>
+  		
     <!-- Bootstrap Core CSS -->
     <link href="/resources/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
@@ -435,6 +439,4 @@
 
         <div id="page-wrapper">
         
-		<!-- jQuery -->
-    	<script  src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-  		crossorigin="anonymous"></script>
+		

@@ -20,7 +20,7 @@
              <!-- /.panel-heading -->
              <div class="panel-body">
                 <form role="form" action="/board/register" method="post">
-                <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }"/>
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 	<div class="form-group">
                 		<label>Title</label>
                 		<input class="form-control" name="title">
@@ -75,9 +75,6 @@
  $(document).ready(function(e){
 	 var formObj = $("form[role='form']");
 	 
-	 var csrfHeaderName = "${_csrf.headerName}";
-	 var csrfTokenValue = "${_csrf.token}";
-	 
 	 $("button[type='submit']").on("click", function(e){
 		 e.preventDefault();
 		 console.log("submit clicked");
@@ -115,6 +112,11 @@
 		 return true;
 	 }
 	 
+	 var csrfHeaderName ="${_csrf.headerName}"; 
+	 var csrfTokenValue="${_csrf.token}";
+	 
+	 console.log("csrfHeaderName : " + csrfHeaderName);
+	 console.log("csrfTokenValue : " + csrfTokenValue);
 	 $("input[type='file']").change(function(e){
 		 var formData = new FormData();
 		 var inputFile = $("input[name='uploadFile']");
@@ -132,7 +134,7 @@
 			 , processData: false
 			 , contentType: false
 			 , beforeSend: function(xhr){
-				 xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);//헤더 정보에 csrf 토큰값 전달 
+				 xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);/* 헤더 정보에 csrf 토큰값 전달 */ 
 			 	}
 			 , data: formData
 			 , type: 'POST'

@@ -194,249 +194,232 @@
  <!-- /.modal -->
  
  <script>
-//댓글 목록
- var bnoValue = '<c:out value="${board.bno}"/>';
- var replyUL = $(".chat");
- 
- showList(1);
- 
- // 파라미터로 전달되는 page 변수를 이용해서 원하는 댓글 페이지 가져오기
- function showList(page){
-	 replyService.getList({bno: bnoValue, page: page||1 }, function(replyCnt, list){
-		 console.log("replyCnt: " + replyCnt);
-		 console.log("list: " + list);
-		 console.log(list);
-		 // page 번호가 '-1'로 전달되면 마지막 페이지를 찾아서 다시 호출
-		 if(page == -1){
-			 pageNum = Math.ceil(replyCnt/10.0);
-			 showList(pageNum);
-			 return;
-		 }
-		 
-		 var str = "";
-		 if(list == null || list.length == 0){
-			 replyUL.html("");
+ $(document).ready(function () {
+	 
+	//댓글 목록
+	 var bnoValue = '<c:out value="${board.bno}"/>';
+	 var replyUL = $(".chat");
+	 
+	 showList(1);
+	 
+	 // 파라미터로 전달되는 page 변수를 이용해서 원하는 댓글 페이지 가져오기
+	 function showList(page){
+		 replyService.getList({bno: bnoValue, page: page||1 }, function(replyCnt, list){
+			 console.log("replyCnt: " + replyCnt);
+			 console.log("list: " + list);
+			 console.log(list);
+			 // page 번호가 '-1'로 전달되면 마지막 페이지를 찾아서 다시 호출
+			 if(page == -1){
+				 pageNum = Math.ceil(replyCnt/10.0);
+				 showList(pageNum);
+				 return;
+			 }
 			 
-			 return;
-		 }
-		 for (var i = 0, len = list.length || 0; i < len; i++){
-			 str += "<li class='left clearfix' data-rno='" + list[i].rno + "'>";
-			 str += "<div><div class='header'><strong class='primary-font'>" + list[i].replyer + "</strong>";
-			 str += "<small class='pull-right text-muted'>" + replyService.displayTime(list[i].replyDate)+"</small></div>";
-			 str += "<p>" + list[i].reply+"</p></div></li>";
+			 var str = "";
+			 if(list == null || list.length == 0){
+				 replyUL.html("");
+				 
+				 return;
+			 }
+			 for (var i = 0, len = list.length || 0; i < len; i++){
+				 str += "<li class='left clearfix' data-rno='" + list[i].rno + "'>";
+				 str += "<div><div class='header'><strong class='primary-font'>" + list[i].replyer + "</strong>";
+				 str += "<small class='pull-right text-muted'>" + replyService.displayTime(list[i].replyDate)+"</small></div>";
+				 str += "<p>" + list[i].reply+"</p></div></li>";
+			 }
+			 
+			  replyUL.html(str);
+			  
+			  showReplyPage(replyCnt);
+		 });//end function
+	 }//end showList
+	 
+	 var pageNum = 1;
+	 var replyPageFooter = $(".panel-footer");
+	 
+	 function showReplyPage(replyCnt){
+		 
+		 var endNum = Math.ceil(pageNum / 10.0) * 10;
+		 var startNum = endNum - 9;
+		 
+		 var prev = startNum != 1;
+		 var next = false;
+		 
+		 if(endNum * 10 >= replyCnt){
+			 endNum = Math.ceil(replyCnt/10.0);
 		 }
 		 
-		  replyUL.html(str);
-		  
-		  showReplyPage(replyCnt);
-	 });//end function
- }//end showList
- 
- var pageNum = 1;
- var replyPageFooter = $(".panel-footer");
- 
- function showReplyPage(replyCnt){
-	 
-	 var endNum = Math.ceil(pageNum / 10.0) * 10;
-	 var startNum = endNum - 9;
-	 
-	 var prev = startNum != 1;
-	 var next = false;
-	 
-	 if(endNum * 10 >= replyCnt){
-		 endNum = Math.ceil(replyCnt/10.0);
+		 if(endNum * 10 < replyCnt){
+			 next = true;
+		 }
+		 
+		 var str = "<ul class='pagination pull-right'>";
+		 
+		 if(prev){
+			 str += "<li class='page-item'><a class='page-link' href='" + (startNum -1) +"'>Previous</a></li>";
+		 }
+		 
+		 for(var i = startNum; i <= endNum; i++){
+			 var active = pageNum == i ? "active":"";
+			 str += "<li class='page-item " + active + " '><a class='page-link' href='" + i +"'>" + i + "</a></li>";
+		 }
+		 
+		 if(next){
+			 str += "<li class='page-item'><a class='page-link' href='" + (endNum + 1) + "'>Next</a></li>";
+		 }
+		 str += "</ul></div>";
+		 console.log(str);
+		 
+		 replyPageFooter.html(str);
 	 }
 	 
-	 if(endNum * 10 < replyCnt){
-		 next = true;
-	 }
+	 replyPageFooter.on("click", "li a", function(e){
+		 e.preventDefault();
+		 console.log("page click");
+		 
+		 var targetPageNum = $(this).attr("href");
+		 console.log("targetPageNum: " + targetPageNum);
+		 pageNum = targetPageNum;
+		 showList(pageNum);
+	 });
 	 
-	 var str = "<ul class='pagination pull-right'>";
 	 
-	 if(prev){
-		 str += "<li class='page-item'><a class='page-link' href='" + (startNum -1) +"'>Previous</a></li>";
-	 }
+	 var modal = $(".modal");
+	 var modalInputReply = modal.find("input[name='reply']");
+	 var modalInputReplyer = modal.find("input[name='replyer']");
+	 var modalInputReplyDate = modal.find("input[name='replyDate']");
 	 
-	 for(var i = startNum; i <= endNum; i++){
-		 var active = pageNum == i ? "active":"";
-		 str += "<li class='page-item " + active + " '><a class='page-link' href='" + i +"'>" + i + "</a></li>";
-	 }
+	 var modalModBtn = $("#modalModBtn");
+	 var modalRemoveBtn = $("#modalRemoveBtn");
+	 var modalRegisterBtn = $("#modalRegisterBtn");
 	 
-	 if(next){
-		 str += "<li class='page-item'><a class='page-link' href='" + (endNum + 1) + "'>Next</a></li>";
-	 }
-	 str += "</ul></div>";
-	 console.log(str);
-	 
-	 replyPageFooter.html(str);
- }
- 
- replyPageFooter.on("click", "li a", function(e){
-	 e.preventDefault();
-	 console.log("page click");
-	 
-	 var targetPageNum = $(this).attr("href");
-	 console.log("targetPageNum: " + targetPageNum);
-	 pageNum = targetPageNum;
-	 showList(pageNum);
- });
- 
- 
- var modal = $(".modal");
- var modalInputReply = modal.find("input[name='reply']");
- var modalInputReplyer = modal.find("input[name='replyer']");
- var modalInputReplyDate = modal.find("input[name='replyDate']");
- 
- var modalModBtn = $("#modalModBtn");
- var modalRemoveBtn = $("#modalRemoveBtn");
- var modalRegisterBtn = $("#modalRegisterBtn");
- 
- $("#addReplyBtn").on("click", function(e){
-	 
-	 modal.find("input").val("");
-	 modal.find("input[name='replyer']").val(replyer);
-	 modalInputReplyDate.closest("div").hide();
-	 modal.find("button[id != 'modalCloseBtn']").hide();
-	 
-	 modalRegisterBtn.show();
-	 
-	 $(".modal").modal("show");
- });
-
- //Ajax spring security header
- $(document).ajaxSend(function(e, xhr, options){
-	 xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
- });
- 
- modalRegisterBtn.on("click", function(e){
-	 
-	 var reply = {
-			 reply: modalInputReply.val()
-			 , replyer: modalInputReplyer.val()
-			 , bno: bnoValue
-	 };
-	 replyService.add(reply, function(result){
-		 alert(result);
+	 $("#addReplyBtn").on("click", function(e){
 		 
 		 modal.find("input").val("");
-		 modal.modal("hide");
+		 modal.find("input[name='replyer']").val(replyer);
+		 modalInputReplyDate.closest("div").hide();
+		 modal.find("button[id != 'modalCloseBtn']").hide();
 		 
-		 //showList(1);
-		 // 사용자가 새로운 댓글 추가하면 showList(-1)을 호출하여 우선 전체 댓글의 숫자를 파악
-		 showList(-1);
-	 });
- });
- 
- $(".chat").on("click", "li", function(e){
-	 var rno = $(this).data("rno");
-	 replyService.get(rno, function(reply){
-		 modalInputReply.val(reply.reply);
-		 modalInputReplyer.val(reply.replyer);
-		 modalInputReplyDate.val(replyService.displayTime(reply.replyDate)).attr("readonly", "readonly");
-		 modal.data("rno", reply.rno);
-		 
-		 modal.find("button[id !='modalCloseBtn']").hide();
-		 modalModBtn.show();
-		 modalRemoveBtn.show();
+		 modalRegisterBtn.show();
 		 
 		 $(".modal").modal("show");
 	 });
- });
- 
- modalModBtn.on("click", function(e){
+	
+	 //Ajax spring security header
+	 $(document).ajaxSend(function(e, xhr, options) { 
+	        xhr.setRequestHeader(csrfHeaderName, csrfTokenValue); 
+	 }); 
 	 
-	 var originalReplyer = modalInputReplyer.val();
-	 var reply = {rno: modal.data("rno"), reply: modalInputReply.val(), replyer: originalReplyer};
-	 
-	 if(!replyer){
-		 alert("로그인 후 수정이 가능합니다.");
-		 modal.modal("hide");
-		 return;
-	 }
-	 
-	 console.log("Origianl Replyer: " + originalReplyer);
-	 
-	 if(replyer != originalReplyer){
-		 alert("자신이 작성한 댓글만 수정이 가능합니다.");
-		 modal.modal("hide");
-		 return;
-	 }
-	 
-	 replyService.update(reply, function(result){
-		 alert(result);
-		 modal.modal("hide");
-		 //showList(1);
-		 showList(pageNum);
+	 modalRegisterBtn.on("click", function(e){
+		 
+		 var reply = {
+				 reply: modalInputReply.val()
+				 , replyer: modalInputReplyer.val()
+				 , bno: bnoValue
+		 };
+		 replyService.add(reply, function(result){
+			 alert(result);
+			 
+			 modal.find("input").val("");
+			 modal.modal("hide");
+			 
+			 //showList(1);
+			 // 사용자가 새로운 댓글 추가하면 showList(-1)을 호출하여 우선 전체 댓글의 숫자를 파악
+			 showList(-1);
+		 });
 	 });
- });
- 
- /* modalModBtn.on("click", function(e){
-	 var reply = {rno: modal.data("rno"), reply: modalInputReply.val()};
 	 
-	 replyService.remove(reply, function(result){
-		 alert(result);
-		 modal.modal("hide");
-		 //showList(1);
-		 showList(pageNum);
+	 $(".chat").on("click", "li", function(e){
+		 var rno = $(this).data("rno");
+		 replyService.get(rno, function(reply){
+			 modalInputReply.val(reply.reply);
+			 modalInputReplyer.val(reply.replyer);
+			 modalInputReplyDate.val(replyService.displayTime(reply.replyDate)).attr("readonly", "readonly");
+			 modal.data("rno", reply.rno);
+			 
+			 modal.find("button[id !='modalCloseBtn']").hide();
+			 modalModBtn.show();
+			 modalRemoveBtn.show();
+			 
+			 $(".modal").modal("show");
+		 });
 	 });
- }); */
- 
- modalRemoveBtn.on("click", function(e){
-	var rno = modal.data("rno");
-	
-	console.log("RNO: " + rno);
-	console.log("REPLYER: " + replyer);
-	
-	if(!replyer){
-		alert("로그인후 삭제가 가능합니다.");
-		modal.modal("hide");
-		return;
-	}
-	var originalReplyer = modalInputReplyer.val();
-	
-	console.log("Original Replyer: " + originalReplyer); // 댓글의 원래 작성자
-	
-	if(replyer != originalReplyer){
-		alert("자신이 작성한 댓글만 삭제 가능합니다.");
-		modal.modal("hide");
-		return;
-	}
-	
-	 replyService.remove(rno, function(result){
-		 alert(result);
-		 modal.modal("hide");
-		 showList(pageNum);
+	 
+	 modalModBtn.on("click", function(e){
+		 
+		 var originalReplyer = modalInputReplyer.val();
+		 var reply = {rno: modal.data("rno"), reply: modalInputReply.val(), replyer: originalReplyer};
+		 
+		 if(!replyer){
+			 alert("로그인 후 수정이 가능합니다.");
+			 modal.modal("hide");
+			 return;
+		 }
+		 
+		 console.log("Origianl Replyer: " + originalReplyer);
+		 
+		 if(replyer != originalReplyer){
+			 alert("자신이 작성한 댓글만 수정이 가능합니다.");
+			 modal.modal("hide");
+			 return;
+		 }
+		 
+		 replyService.update(reply, function(result){
+			 alert(result);
+			 modal.modal("hide");
+			 //showList(1);
+			 showList(pageNum);
+		 });
 	 });
- });
- 
- $(".uploadResult").on("click", "li", function(e){
-	 console.log("view image");
 	 
-	 var liObj = $(this);
-	 var path = encodeURIComponent(liObj.data("path") + "/" + liObj.data("uuid") + "_" + liObj.data("filename"));
+	 /* modalModBtn.on("click", function(e){
+		 var reply = {rno: modal.data("rno"), reply: modalInputReply.val()};
+		 
+		 replyService.remove(reply, function(result){
+			 alert(result);
+			 modal.modal("hide");
+			 //showList(1);
+			 showList(pageNum);
+		 });
+	 }); */
 	 
-	 if(liObj.data("type")){
-		 // 파일 경로의 경우 함수로 전달될 때 문제가 생기므로 replace()를 이용해서 변환 후 전달
-		 showImage(path.replace(new RegExp(/\\/g), "/"));
-	 }else{
-		 // download
-		 self.location = "/download?fileName=" + path;
-	 }
- });
- 
- function showImage(fileCallPath){
-	 alert(fileCallPath);
-	 $(".bigPictureWrapper").css("display","flex").show();
-	 $(".bigPicture").html("<img src='/display?fileName=" + fileCallPath + "'>")
-	 	.animate({width:'100%', height: '100%'}, 1000);
- }
- 
- $(".bigPictureWrapper").on("click", function(e){
-	 $(".bigPicture").animate({width:'0%', height:'0%'}, 1000);
-	 setTimeout(function(){
-		 $(".bigPictureWrapper").hide();
-	 }, 1000);
- });
+	 modalRemoveBtn.on("click", function(e){
+		var rno = modal.data("rno");
+		
+		console.log("RNO: " + rno);
+		console.log("REPLYER: " + replyer);
+		
+		if(!replyer){
+			alert("로그인후 삭제가 가능합니다.");
+			modal.modal("hide");
+			return;
+		}
+		var originalReplyer = modalInputReplyer.val();
+		
+		console.log("Original Replyer: " + originalReplyer); // 댓글의 원래 작성자
+		
+		if(replyer != originalReplyer){
+			alert("자신이 작성한 댓글만 삭제 가능합니다.");
+			modal.modal("hide");
+			return;
+		}
+		
+		 replyService.remove(rno, originalReplyer, function(result){
+			 alert(result);
+			 modal.modal("hide");
+			 showList(pageNum);
+		 });
+	 });
+	 
+	 var replyer = null;
+	 <sec:authorize access="isAuthenticated()">
+	 	replyer = '<sec:authentication property="principal.username"/>';	
+	 </sec:authorize>
+	 
+	 var csrfHeaderName ="${_csrf.headerName}"; 
+	 var csrfTokenValue="${_csrf.token}";
+
+});
  </script>
  <script type="text/javascript">
  $(document).ready(function(){
@@ -482,14 +465,37 @@
 		 }); // end getJSON
 	 })();// end function
 	 
-	 var replyer = null;
-	 <sec:authorize access="isAuthenticated()">
-	 	replyer = '<sec:authentication property="principal.username"/>';	
-	 </sec:authorize>
-	 
-	 var csrfHeaderName ="${_csrf.headerName}"; 
-	 var csrfTokenValue="${_csrf.token}";
  });
+ 
+ $(".uploadResult").on("click", "li", function(e){
+	 console.log("view image");
+	 
+	 var liObj = $(this);
+	 var path = encodeURIComponent(liObj.data("path") + "/" + liObj.data("uuid") + "_" + liObj.data("filename"));
+	 
+	 if(liObj.data("type")){
+		 // 파일 경로의 경우 함수로 전달될 때 문제가 생기므로 replace()를 이용해서 변환 후 전달
+		 showImage(path.replace(new RegExp(/\\/g), "/"));
+	 }else{
+		 // download
+		 self.location = "/download?fileName=" + path;
+	 }
+ });
+ 
+ function showImage(fileCallPath){
+	 alert(fileCallPath);
+	 $(".bigPictureWrapper").css("display","flex").show();
+	 $(".bigPicture").html("<img src='/display?fileName=" + fileCallPath + "'>")
+	 	.animate({width:'100%', height: '100%'}, 1000);
+ }
+ 
+ $(".bigPictureWrapper").on("click", function(e){
+	 $(".bigPicture").animate({width:'0%', height:'0%'}, 1000);
+	 setTimeout(function(){
+		 $(".bigPictureWrapper").hide();
+	 }, 1000);
+ });
+ 
 /*  
 console.log("=================");
  console.log("JS TEST");
